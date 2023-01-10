@@ -1,0 +1,53 @@
+<?php
+session_start();
+include 'header.php';
+include '../connection.php';
+$email = $_SESSION['email'];
+?>
+<style>
+    td {
+        padding: 10px;
+        ;
+    }
+
+    th {
+        background-color: lightcoral;
+        padding: 7px;
+    }
+</style>
+<div style="margin: 50px 20px 20px 150px;">
+    <h1>Work Details</h1><br>
+    <form method="POST">
+
+        <table border="1">
+            <tr>
+                <th>DATE </th>
+                <th>CUSTOMER </th>
+                <th>CUSTOMER MAIL</th>
+                <th>DISTRICT</th>
+                <th>WORK DESCRIPTION</th>
+                <th>Other Requirements</th>
+
+
+            </tr>
+            <?php
+            $qry = "select tblworkrequest.*,tbluser.* from tblworkrequest,tbluser,tblworkallocation where tblworkallocation.wEmail='$email' and tblworkrequest.uEmail=tbluser.uEmail and tblworkrequest.status='allocated' and tblworkrequest.workId=tblworkallocation.workId";
+            $res = mysqli_query($con, $qry);
+            while ($r = mysqli_fetch_array($res)) {
+                echo '<tr>';
+                echo '<td>' . $r['tdate'] . '</td>';
+                echo '<td>' . $r['uName'] . '</td>';
+                echo '<td>' . $r['uEmail'] . '</td>';
+                echo '<td>' . $r['wDistrict'] . '</td>';
+                echo '<td>' . $r['wDesc'] . '</td>';
+                echo '<td>' . $r['wAddress'] . '</td>';
+                echo "<td><iframe src = 'https://maps.google.com/maps?q=$r[lat],$r[lon]&hl=es;z=14&amp;output=embed' min-width='500px'></iframe></td>";
+                echo '<td><a href="mechanicapprovework.php?id=' . $r[0] . '&status=accepted">Accept</a></td>';
+                echo '<td><a href="mechanicapprovework.php?id=' . $r[0] . '&status=rejected">Reject</a></td>';
+                echo '</tr>';
+            }
+            ?>
+
+        </table>
+    </form>
+</div>
